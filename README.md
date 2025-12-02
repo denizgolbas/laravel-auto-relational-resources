@@ -2,7 +2,7 @@
 
 # Laravel Auto Relational Resources
 
-![Laravel Auto Relational Resources](logo.png)
+![Laravel Auto Relational Resources](art/logo.png)
 
 **Automatic relational resource management for Laravel**
 
