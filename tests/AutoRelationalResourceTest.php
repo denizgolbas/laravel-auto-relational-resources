@@ -11,7 +11,7 @@ class AutoRelationalResourceTest extends TestCase
     public function test_resource_can_be_instantiated()
     {
         $resource = new class(['id' => 1]) extends AutoRelationalResource {
-            public function toArray($request)
+            public function toArray($request): array
             {
                 return parent::toArray($request);
             }
