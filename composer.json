@@ -1,0 +1,41 @@
+{
+    "name": "denizgolbas/laravel-auto-relational-resources",
+    "description": "Laravel package for automatically handling relational resources",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Deniz Golbas",
+            "email": "denizgolbas@example.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "illuminate/support": "^10.0|^11.0",
+        "illuminate/http": "^10.0|^11.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0|^9.0",
+        "phpunit/phpunit": "^10.0|^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "DenizGolbas\\LaravelAutoRelationalResources\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DenizGolbas\\LaravelAutoRelationalResources\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "DenizGolbas\\LaravelAutoRelationalResources\\AutoRelationalResourcesServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
+
