@@ -84,6 +84,61 @@ class UserResource extends AutoRelationalResource
 
 The package automatically detects loaded relations and returns them using the corresponding Resource classes.
 
+### Example Response
+
+When you use the package with loaded relations, the response will automatically include related resources:
+
+**Controller:**
+```php
+$user = User::with(['posts', 'profile'])->find(1);
+return new UserResource($user);
+```
+
+**Response:**
+```json
+{
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "posts": [
+        {
+            "id": 1,
+            "title": "My First Post",
+            "content": "This is my first post content",
+            "comments": [
+                {
+                    "id": 1,
+                    "body": "Great post!",
+                    "author": {
+                        "id": 2,
+                        "name": "Jane Smith"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "title": "My Second Post",
+            "content": "This is my second post content"
+        }
+    ],
+    "profile": {
+        "id": 1,
+        "bio": "Software developer",
+        "avatar": "https://example.com/avatar.jpg"
+    },
+    "meta": {
+        "version": "1.0.0"
+    }
+}
+```
+
+As you can see, the package automatically:
+- ✅ Includes the `posts` collection relation
+- ✅ Includes the `profile` model relation
+- ✅ Recursively includes nested relations like `comments` and `author`
+- ✅ Uses the corresponding Resource classes (`PostResource`, `ProfileResource`, `CommentResource`, etc.)
+
 ### Important Notes
 
 **File Structure Requirement:** Collection and Resource files must follow the same path structure as your model files. The package converts the model class namespace to the Resource namespace to find the corresponding Resource class.
