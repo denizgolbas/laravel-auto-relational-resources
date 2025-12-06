@@ -139,6 +139,59 @@ As you can see, the package automatically:
 - ✅ Recursively includes nested relations like `comments` and `author`
 - ✅ Uses the corresponding Resource classes (`PostResource`, `ProfileResource`, `CommentResource`, etc.)
 
+### Collection Response Example
+
+When using Resource Collections, relations are automatically resolved for each item:
+
+**Controller:**
+```php
+$users = User::with(['posts', 'profile'])->get();
+return UserResource::collection($users);
+```
+
+**Response:**
+```json
+{
+    "data": [
+        {
+            "id": 1,
+            "name": "John Doe",
+            "email": "john@example.com",
+            "posts": [
+                {
+                    "id": 1,
+                    "title": "My First Post",
+                    "content": "This is my first post content"
+                }
+            ],
+            "profile": {
+                "id": 1,
+                "bio": "Software developer"
+            }
+        },
+        {
+            "id": 2,
+            "name": "Jane Smith",
+            "email": "jane@example.com",
+            "posts": [
+                {
+                    "id": 2,
+                    "title": "Another Post",
+                    "content": "Post content here"
+                }
+            ],
+            "profile": {
+                "id": 2,
+                "bio": "Designer"
+            }
+        }
+    ],
+    "meta": {
+        "version": "1.0.0"
+    }
+}
+```
+
 ### Important Notes
 
 **File Structure Requirement:** Collection and Resource files must follow the same path structure as your model files. The package converts the model class namespace to the Resource namespace to find the corresponding Resource class.
@@ -154,13 +207,115 @@ If a Resource class is not found, the relation data will not be included.
 
 ## Configuration
 
-You can configure the following settings in the configuration file:
+After publishing the configuration file, you can customize the package behavior. The configuration file is located at `config/auto-relational-resources.php`.
 
-- `model_namespace`: Model namespace (default: `App\Models`)
-- `resource_namespace`: Resource namespace (default: `App\Http\Resources`)
-- `auto_load_relations`: Automatically load relations (default: `true`)
-- `max_depth`: Maximum relation depth (default: `null` - infinite depth)
-- `allowed_empty_collections`: Collection names to include even if empty
+### Available Configuration Options
+
+#### `model_namespace`
+**Default:** `App\Models`
+
+The namespace where your Eloquent models are located. The package uses this to resolve Resource class names from Model class names.
+
+**Example:**
+```php
+'model_namespace' => 'App\\Models',
+// or
+'model_namespace' => 'Domain\\Models',
+```
+
+#### `resource_namespace`
+**Default:** `App\Http\Resources`
+
+The namespace where your Resource classes are located. The package converts Model namespaces to Resource namespaces using this setting.
+
+**Example:**
+```php
+'resource_namespace' => 'App\\Http\\Resources',
+// or
+'resource_namespace' => 'Domain\\Http\\Resources',
+```
+
+**How it works:**
+- Model: `App\Models\User` → Resource: `App\Http\Resources\UserResource`
+- Model: `Domain\Models\Product` → Resource: `Domain\Http\Resources\ProductResource`
+
+#### `auto_load_relations`
+**Default:** `true`
+
+When set to `true`, relations are automatically merged into the resource response. Set to `false` to disable automatic relation loading.
+
+**Example:**
+```php
+'auto_load_relations' => true, // Relations are automatically included
+'auto_load_relations' => false, // Relations must be manually merged
+```
+
+#### `max_depth`
+**Default:** `null` (infinite depth)
+
+Controls the maximum depth level for resolving relations. Set to `null` or `0` for infinite depth (default). Use a positive integer to limit the depth.
+
+**Examples:**
+```php
+'max_depth' => null,  // Infinite depth - all relations are resolved
+'max_depth' => 0,     // Same as null - infinite depth
+'max_depth' => 3,     // Maximum 3 levels deep
+```
+
+**Depth levels explained:**
+- Depth 0: Main resource
+- Depth 1: Direct relations of the main resource
+- Depth 2: Relations of relations
+- Depth 3: Relations of relations of relations
+
+#### `allowed_empty_collections`
+**Default:** `[]`
+
+An array of collection relation names that should be included in the response even if they are empty. By default, empty collections are excluded.
+
+**Example:**
+```php
+'allowed_empty_collections' => [
+    'bankTransactionLines',
+    'customerSlipLines',
+],
+```
+
+This ensures that even if these collections are empty, they will appear in the response as empty arrays.
+
+### Environment Variables
+
+You can also configure these settings using environment variables in your `.env` file:
+
+```env
+AUTO_RELATIONAL_RESOURCES_MODEL_NAMESPACE=App\\Models
+AUTO_RELATIONAL_RESOURCES_RESOURCE_NAMESPACE=App\\Http\\Resources
+AUTO_RELATIONAL_RESOURCES_AUTO_LOAD=true
+AUTO_RELATIONAL_RESOURCES_MAX_DEPTH=null
+```
+
+### Configuration Example
+
+Here's a complete configuration example:
+
+```php
+return [
+    'version' => '1.0.0',
+    
+    'auto_load_relations' => true,
+    
+    'max_depth' => null, // Infinite depth
+    
+    'model_namespace' => 'App\\Models',
+    
+    'resource_namespace' => 'App\\Http\\Resources',
+    
+    'allowed_empty_collections' => [
+        'bankTransactionLines',
+        'customerSlipLines',
+    ],
+];
+```
 
 ## Features
 
